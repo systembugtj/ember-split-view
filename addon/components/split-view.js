@@ -73,13 +73,13 @@ export default Component.extend({
   didInsertElement(...args) {
     this._super(...args);
 
-    const parentView = this.get('parentView');
+    const parentView = this.parentView;
     const isRoot = !(parentView instanceof SplitChild);
 
     // run next to avoid changing the component during a render iteration
     next(this, () => {
       this.set('isRoot', isRoot);
-      const resizeService = this.get('resizeService');
+      const resizeService = this.resizeService;
 
       if (!isRoot) {
         parentView.set('childSplitView', this);
@@ -107,7 +107,7 @@ export default Component.extend({
 
   willDestroyElement() {
     this._super();
-    const resizeService = this.get('resizeService');
+    const resizeService = this.resizeService;
     if (resizeService) {
       resizeService.off('didResize', this, this.didResize);
     }
@@ -121,11 +121,11 @@ export default Component.extend({
   },
 
   _setStyle() {
-    const style = this.get('element').style;
-    if (this.get('isRoot')) {
+    const style = this.element.style;
+    if (this.isRoot) {
       // let the DOM know our minimum size
-      const isVertical = this.get('isVertical');
-      const size = `${this.get('minSize')}px`;
+      const isVertical = this.isVertical;
+      const size = `${this.minSize}px`;
       if (isVertical) {
         style.minWidth = size;
         style.minHeight = null;
@@ -146,7 +146,7 @@ export default Component.extend({
   ),
 
   addSplit(split) {
-    const splits = this.get('splits');
+    const splits = this.splits;
     splits.addObject(split);
 
     if (splits.length === 2) {
@@ -155,16 +155,16 @@ export default Component.extend({
   },
 
   removeSplit(split) {
-    this.get('splits').removeObject(split);
+    this.splits.removeObject(split);
   },
 
   updateOrientation: observer('isVertical',
     function () {
-      const splits = this.get('splits');
+      const splits = this.splits;
       const leftOrTop = splits.objectAt(0);
       const rightOrBottom = splits.objectAt(1);
 
-      if (this.get('isVertical')) {
+      if (this.isVertical) {
         leftOrTop.set('anchorSide', 'right');
         rightOrBottom.set('anchorSide', 'left');
       } else {
@@ -176,23 +176,23 @@ export default Component.extend({
 
   constrainSplit: observer('sash.width', 'width', 'height', 'isVertical',
     function () {
-      const splits = this.get('splits');
+      const splits = this.splits;
       const leftOrTop = splits.objectAt(0);
       const rightOrBottom = splits.objectAt(1);
 
       if (leftOrTop) {
         const minLeftOrTopPosition = leftOrTop.get('minSize');
 
-        if (this.get('splitPosition') < minLeftOrTopPosition) {
+        if (this.splitPosition < minLeftOrTopPosition) {
           this.set('splitPosition', minLeftOrTopPosition);
         }
       }
 
-      const size = this.get('isVertical') ? this.get('width') : this.get('height');
+      const size = this.isVertical ? this.width : this.height;
       if (rightOrBottom) {
         const minRightOrBottomPosition = size - rightOrBottom.get('minSize');
 
-        if (this.get('splitPosition') > minRightOrBottomPosition) {
+        if (this.splitPosition > minRightOrBottomPosition) {
           this.set('splitPosition', minRightOrBottomPosition);
         }
       }
@@ -202,7 +202,7 @@ export default Component.extend({
   minSize: computed('splits.@each.minSize', 'sash.width',
     function () {
       let result = 0;
-      const children = this.get('splits');
+      const children = this.splits;
       for (let i = 0; i < children.length; i += 1) {
         result += children[i].get('minSize');
       }
@@ -220,14 +220,14 @@ export default Component.extend({
   },
 
   mouseMove(event) {
-    if (!this.get('isDragging')) {
+    if (!this.isDragging) {
       return;
     }
 
     let position = 0;
 
     const offset = this.$().offset();
-    if (this.get('isVertical')) {
+    if (this.isVertical) {
       position = event.pageX - offset.left;
     } else {
       position = event.pageY - offset.top;

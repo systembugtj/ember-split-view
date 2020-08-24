@@ -1,30 +1,28 @@
-import {
-  moduleForComponent,
-  test
-} from 'ember-qunit';
+import { run } from '@ember/runloop';
 
-import Ember from 'ember';
+import { module, test } from 'qunit';
 
-moduleForComponent('split-child', 'SplitChildComponent', {
-  // specify the other units that are required for this test
-  needs: []
-});
+import { setupTest } from 'ember-qunit';
 
-test('it renders', function(assert) {
-  assert.expect(2);
+module('SplitChildComponent', function(hooks) {
+  setupTest(hooks);
 
-  // creates the component instance
-  var component;
-  var self = this;
+  test('it renders', function(assert) {
+    assert.expect(2);
 
-  Ember.run(function(){
-    component = self.subject();
+    // creates the component instance
+    var component;
+    var self = this;
+
+    run(function(){
+      component = self.subject();
+    });
+
+    assert.equal(component._state, 'preRender');
+
+    // appends the component to the page
+    this.render();
+    
+    assert.equal(component._state, 'inDOM');
   });
-
-  assert.equal(component._state, 'preRender');
-
-  // appends the component to the page
-  this.render();
-  
-  assert.equal(component._state, 'inDOM');
 });

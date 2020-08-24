@@ -24,7 +24,7 @@ export default Component.extend({
   },
 
   didInsertElement() {
-    const parent = this.get('parent');
+    const parent = this.parent;
 
     // run next to avoid changing the component during a render iteration
     next(this, () => {
@@ -36,7 +36,7 @@ export default Component.extend({
   },
 
   willDestroyElement() {
-    const parent = this.get('parent');
+    const parent = this.parent;
 
     if (parent && parent.removeSplit) {
       parent.removeSplit(this);
@@ -44,21 +44,21 @@ export default Component.extend({
   },
 
   _setStyle() {
-    const anchorSide = this.get('anchorSide');
+    const anchorSide = this.anchorSide;
     let l = null;
     let r = null;
     let t = null;
     let b = null;
     if (anchorSide === 'left') {
-      l = `${this.get('anchorOffset')}px`;
+      l = `${this.anchorOffset}px`;
     } else if (anchorSide === 'right') {
-      r = `${this.get('anchorOffset')}px`;
+      r = `${this.anchorOffset}px`;
     } else if (anchorSide === 'top') {
-      t = `${this.get('anchorOffset')}px`;
+      t = `${this.anchorOffset}px`;
     } else if (anchorSide === 'bottom') {
-      b = `${this.get('anchorOffset')}px`;
+      b = `${this.anchorOffset}px`;
     }
-    const style = this.get('element').style;
+    const style = this.element.style;
     style.left = l;
     style.right = r;
     style.top = t;
@@ -73,7 +73,7 @@ export default Component.extend({
 
   parentSize: computed('anchorSide', 'parent.{width,height}',
     function () {
-      const anchorSide = this.get('anchorSide');
+      const anchorSide = this.anchorSide;
       if (!anchorSide) {
         return 0;
       }
@@ -88,7 +88,7 @@ export default Component.extend({
 
   anchorOffset: computed('parent.{sash.width,splitPosition}', 'anchorSide', 'parentSize',
     function () {
-      const anchorSide = this.get('anchorSide');
+      const anchorSide = this.anchorSide;
 
       if (!anchorSide) {
         return undefined;
@@ -101,7 +101,7 @@ export default Component.extend({
         return splitPosition + sashWidth / 2;
       }
 
-      const parentSize = this.get('parentSize');
+      const parentSize = this.parentSize;
       if (!parentSize) {
         return 0;
       }
@@ -113,7 +113,7 @@ export default Component.extend({
     function () {
       // must run afterRender so that the size has updated
       scheduleOnce('afterRender', this, () => {
-        const childSplitView = this.get('childSplitView');
+        const childSplitView = this.childSplitView;
 
         const element = this.$();
         if (childSplitView) {
@@ -125,12 +125,12 @@ export default Component.extend({
   ),
 
   collapse() {
-    if (this.get('anchorSide') === 'left' || this.get('anchorSide') === 'top') {
-      this.set('parent.splitPosition', this.get('parentSize'));
+    if (this.anchorSide === 'left' || this.anchorSide === 'top') {
+      this.set('parent.splitPosition', this.parentSize);
     } else {
       this.set('parent.splitPosition', 0);
     }
-    this.get('parent').constrainSplit();
+    this.parent.constrainSplit();
   },
 
   cssInt(name) {
@@ -162,7 +162,7 @@ export default Component.extend({
 
   minSize: computed('parent.isVertical', 'childSplitView.minSize',
     function () {
-      const childSplitView = this.get('childSplitView');
+      const childSplitView = this.childSplitView;
       if (childSplitView) {
         return childSplitView.get('minSize');
       }

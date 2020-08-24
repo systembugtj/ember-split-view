@@ -1,12 +1,12 @@
-import Ember from 'ember';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
+export default Controller.extend({
   actions: {
     collapseLeft: function() {
-      this.get('leftChild').collapse();
+      this.leftChild.collapse();
     },
     collapseRight: function() {
-      this.get('rightChild').collapse();
+      this.rightChild.collapse();
     }
   }
 });

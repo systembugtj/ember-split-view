@@ -22,7 +22,7 @@ export default Component.extend({
   didInsertElement() {
     this._super();
     // run next to avoid changing the component during a render iteration
-    const parent = this.get('parent');
+    const parent = this.parent;
     next(this, () => {
       if (parent) {
         this.set('parent.sash', this);
@@ -32,11 +32,11 @@ export default Component.extend({
   },
 
   _setStyle() {
-    const width = this.get('width');
+    const width = this.width;
     const position = this.get('parent.splitPosition');
     const isVertical = this.get('parent.isVertical');
 
-    const style = this.get('element').style;
+    const style = this.element.style;
 
 
     if (isVertical) {
