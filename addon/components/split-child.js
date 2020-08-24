@@ -115,10 +115,10 @@ export default Component.extend({
       scheduleOnce('afterRender', this, () => {
         const childSplitView = this.childSplitView;
 
-        const element = this.$();
+        const element = this.element;
         if (childSplitView) {
-          childSplitView.set('width', element.width());
-          childSplitView.set('height', element.height());
+          childSplitView.set('width', element.width);
+          childSplitView.set('height', element.height);
         }
       });
     }
@@ -134,7 +134,7 @@ export default Component.extend({
   },
 
   cssInt(name) {
-    return parseInt(this.$().css(name), 10) || 0;
+    return parseInt(this.element.style[name], 10) || 0;
   },
 
   minSizeVertical() {

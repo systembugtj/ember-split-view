@@ -98,9 +98,9 @@ export default Component.extend({
       });
       scheduleOnce('afterRender', this, () => {
         // must do this in afterRender so that the parent has calculated its width and height
-        const element = this.$();
-        this.set('width', element.width());
-        this.set('height', element.height());
+        const clientRect = this.element.getBoundingClientRect();
+        this.set('width', clientRect.width);
+        this.set('height', clientRect.height);
       });
     });
   },
@@ -114,9 +114,9 @@ export default Component.extend({
   },
 
   didResize() {
-    const element = this.$();
-    this.set('width', element.width());
-    this.set('height', element.height());
+    const clientRect = this.element.getBoundingClientRect();
+    this.set('width', clientRect.width);
+    this.set('height', clientRect.height);
     this.constrainSplit();
   },
 
@@ -226,7 +226,7 @@ export default Component.extend({
 
     let position = 0;
 
-    const offset = this.$().offset();
+    const offset = this.offset();
     if (this.isVertical) {
       position = event.pageX - offset.left;
     } else {
@@ -235,6 +235,15 @@ export default Component.extend({
 
     this.set('splitPosition', position);
     this.constrainSplit();
+  },
+
+  offset() {
+    const rect = this.element.getBoundingClientRect();
+		const win = this.element.ownerDocument.defaultView;
+		return {
+			top: rect.top + win.pageYOffset,
+			left: rect.left + win.pageXOffset
+		};
   },
 
 });
