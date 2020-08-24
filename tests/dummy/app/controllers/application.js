@@ -6,8 +6,8 @@ export default Controller.extend({
   tabs: A([
     EmberObject.create({ title: "Vertical", content: 'vertical'}),
     EmberObject.create({ title: "Horizontal", content: 'horizontal'}),
-    EmberObject.create({ title: "Vertical Composite", content: 'verticalComposite'}),
-    EmberObject.create({ title: "Horizontal Composite", content: 'horizontalComposite'}),
+    EmberObject.create({ title: "Vertical Composite", content: 'verticalcomposite'}),
+    EmberObject.create({ title: "Horizontal Composite", content: 'horizontalcomposite'}),
     EmberObject.create({ title: "Composite", content: 'composite'}),
     EmberObject.create({ title: "Collapsible Panes", content: 'collapsiblePanes'}),
   ])
