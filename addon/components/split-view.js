@@ -96,12 +96,14 @@ export default Component.extend({
       next(this, () => {
         this._setStyle();
       });
-      scheduleOnce('afterRender', this, () => {
-        // must do this in afterRender so that the parent has calculated its width and height
-        const clientRect = this.element.getBoundingClientRect();
-        this.set('width', clientRect.width);
-        this.set('height', clientRect.height);
-      });
+
+      scheduleOnce('afterRender', this,
+        function updateSize() {
+          // must do this in afterRender so that the parent has calculated its width and height
+          const clientRect = this.element.getBoundingClientRect();
+          this.set('width', clientRect.width);
+          this.set('height', clientRect.height);
+        });
     });
   },
 
@@ -140,7 +142,7 @@ export default Component.extend({
   },
 
   styleChanged: observer('isVertical', 'minSize', 'isRoot',
-    function () {
+    function styleChanged() {
       this._setStyle();
     }
   ),
