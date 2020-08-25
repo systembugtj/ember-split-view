@@ -1,4 +1,7 @@
-# ember-split-view Changelog
+# @system/ember-split-view Changelog
+
+### 1.3.0
+* emberjs 3.20
 
 ### 1.1.0
 * Update EmberJS to 2.16.2

@@ -1,7 +1,7 @@
 
-See it in action: http://bryanhunt.github.io/#/split
+Forked Repo to support ember 3.20
 
-There is a demo app in [tests/dummy](https://github.com/BryanHunt/ember-split-view/tree/master/tests/dummy).
+There is a demo app in [tests/dummy](https://github.com/systembugtj/ember-split-view/tree/master/tests/dummy).
 
 ## Installation
 

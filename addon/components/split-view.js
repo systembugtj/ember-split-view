@@ -1,12 +1,13 @@
 /* eslint max-len: 0 */
 /* eslint new-cap: ["error", { "capIsNew": false }]*/
 import Component from '@ember/component';
-import { computed, observer, action } from '@ember/object';
+import { computed, action } from '@ember/object';
 import { A } from '@ember/array';
 import { next, scheduleOnce } from '@ember/runloop'
 import SplitChild from './split-child';
-import splitViewLayout from 'ember-split-view/templates/components/split-view';
-
+import splitViewLayout from '@systembug/ember-split-view/templates/components/split-view';
+import { layout, classNames, className } from "@ember-decorators/component"
+import { observes } from "@ember-decorators/object"
 
 /**
  * This class represents a view that is split either vertically or horizontally.
@@ -45,12 +46,16 @@ import splitViewLayout from 'ember-split-view/templates/components/split-view';
  * @cLass SplitViewComponent
  * @extends Ember.Component
  */
+
+@layout(splitViewLayout)
+@classNames('split-view')
 export default class SplitViewerComponent extends Component {
-  layout = splitViewLayout;
+
   /**
    * @property {boolean} isVertical - the orientation of the split: true = vertical, false = horizontal
    * @default true
    */
+  @className('vertical', 'horizontal')
   isVertical = true;
 
   /**
@@ -60,10 +65,70 @@ export default class SplitViewerComponent extends Component {
   splitPosition = 250;
 
   splits = null;
+
+  @className("dragging")
   isDragging = false;
+
   isRoot = false;
-  classNames = ['split-view'];
-  classNameBindings = ['isDragging:dragging', 'isVertical:vertical:horizontal'];
+
+  @computed('splits.@each.minSize', 'sash.width')
+  get minSize() {
+    let result = 0;
+    const children = this.splits;
+    for (let i = 0; i < children.length; i += 1) {
+      result += children[i].get('minSize');
+    }
+    result += (children.length - 1) * this.get('sash.width');
+    return result;
+  }
+
+  // eslint-disable-next-line ember/no-observers
+  @observes('isVertical', 'minSize', 'isRoot')
+  styleChanged () {
+      this._setStyle();
+  }
+
+  // eslint-disable-next-line ember/no-observers
+  @observes('isVertical')
+  updateOrientation() {
+    const splits = this.splits;
+    const leftOrTop = splits.objectAt(0);
+    const rightOrBottom = splits.objectAt(1);
+
+    if (this.isVertical) {
+      leftOrTop.set('anchorSide', 'right');
+      rightOrBottom.set('anchorSide', 'left');
+    } else {
+      leftOrTop.set('anchorSide', 'bottom');
+      rightOrBottom.set('anchorSide', 'top');
+    }
+  }
+
+  // eslint-disable-next-line ember/no-observers
+  @observes('sash.width', 'width', 'height', 'isVertical')
+  constrainSplit() {
+    const splits = this.splits;
+    const leftOrTop = splits.objectAt(0);
+    const rightOrBottom = splits.objectAt(1);
+
+    if (leftOrTop) {
+      const minLeftOrTopPosition = leftOrTop.get('minSize');
+
+      if (this.splitPosition < minLeftOrTopPosition) {
+        this.set('splitPosition', minLeftOrTopPosition);
+      }
+    }
+
+    const size = this.isVertical ? this.width : this.height;
+    if (rightOrBottom) {
+      const minRightOrBottomPosition = size - rightOrBottom.get('minSize');
+
+      if (this.splitPosition > minRightOrBottomPosition) {
+        this.set('splitPosition', minRightOrBottomPosition);
+      }
+    }
+  }
+
 
   init() {
     super.init();
@@ -131,13 +196,15 @@ export default class SplitViewerComponent extends Component {
       });
 
       scheduleOnce('afterRender', this,
-        function updateSize() {
-          // must do this in afterRender so that the parent has calculated its width and height
-          const clientRect = this.element.getBoundingClientRect();
-          this.set('width', clientRect.width);
-          this.set('height', clientRect.height);
-        });
+        this.updateSize);
     });
+  }
+
+  updateSize() {
+    // must do this in afterRender so that the parent has calculated its width and height
+    const clientRect = this.element.getBoundingClientRect();
+    this.set('width', clientRect.width);
+    this.set('height', clientRect.height);
   }
 
   willDestroyElement() {
@@ -179,12 +246,6 @@ export default class SplitViewerComponent extends Component {
     }
   }
 
-  styleChanged = observer('isVertical', 'minSize', 'isRoot',
-    function styleChanged() {
-      this._setStyle();
-    }
-  );
-
   addSplit(split) {
     const splits = this.splits;
     splits.addObject(split);
@@ -198,59 +259,6 @@ export default class SplitViewerComponent extends Component {
     this.splits.removeObject(split);
   }
 
-  updateOrientation = observer('isVertical',
-    function () {
-      const splits = this.splits;
-      const leftOrTop = splits.objectAt(0);
-      const rightOrBottom = splits.objectAt(1);
-
-      if (this.isVertical) {
-        leftOrTop.set('anchorSide', 'right');
-        rightOrBottom.set('anchorSide', 'left');
-      } else {
-        leftOrTop.set('anchorSide', 'bottom');
-        rightOrBottom.set('anchorSide', 'top');
-      }
-    }
-  );
-
-  constrainSplit = observer('sash.width', 'width', 'height', 'isVertical',
-    function () {
-      const splits = this.splits;
-      const leftOrTop = splits.objectAt(0);
-      const rightOrBottom = splits.objectAt(1);
-
-      if (leftOrTop) {
-        const minLeftOrTopPosition = leftOrTop.get('minSize');
-
-        if (this.splitPosition < minLeftOrTopPosition) {
-          this.set('splitPosition', minLeftOrTopPosition);
-        }
-      }
-
-      const size = this.isVertical ? this.width : this.height;
-      if (rightOrBottom) {
-        const minRightOrBottomPosition = size - rightOrBottom.get('minSize');
-
-        if (this.splitPosition > minRightOrBottomPosition) {
-          this.set('splitPosition', minRightOrBottomPosition);
-        }
-      }
-    }
-  );
-
-  minSize = computed('splits.@each.minSize', 'sash.width',
-    function () {
-      let result = 0;
-      const children = this.splits;
-      for (let i = 0; i < children.length; i += 1) {
-        result += children[i].get('minSize');
-      }
-      result += (children.length - 1) * this.get('sash.width');
-      return result;
-    }
-  );
-
   offset() {
     const rect = this.element.getBoundingClientRect();
 		const win = this.element.ownerDocument.defaultView;
@@ -259,5 +267,4 @@ export default class SplitViewerComponent extends Component {
 			left: rect.left + win.pageXOffset
 		};
   }
-
 }

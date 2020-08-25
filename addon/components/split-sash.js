@@ -1,4 +1,5 @@
 import Component from '@ember/component';
+// eslint-disable-next-line ember/no-observers
 import { observer } from '@ember/object';
 import { next } from '@ember/runloop'
 
@@ -56,6 +57,7 @@ export default Component.extend({
     }
   },
 
+  // eslint-disable-next-line ember/no-observers
   style: observer('parent.splitPosition', 'parent.isVertical', 'width',
     function () {
       this._setStyle();

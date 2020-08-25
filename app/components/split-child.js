@@ -1,3 +1,3 @@
-import SplitChild from 'ember-split-view/components/split-child';
+import SplitChild from '@systembug/ember-split-view/components/split-child';
 
 export default SplitChild;

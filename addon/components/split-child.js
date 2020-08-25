@@ -1,7 +1,8 @@
 import Component from '@ember/component';
+// eslint-disable-next-line ember/no-observers
 import { computed, observer } from '@ember/object';
 import { schedule, next, scheduleOnce } from '@ember/runloop'
-import splitChildLayout from 'ember-split-view/templates/components/split-child';
+import splitChildLayout from '@systembug/ember-split-view/templates/components/split-child';
 
 export default Component.extend({
   layout: splitChildLayout,
@@ -65,6 +66,7 @@ export default Component.extend({
     style.bottom = b;
   },
 
+  // eslint-disable-next-line ember/no-observers
   styleChanged: observer('anchorSide', 'anchorOffset',
     function () {
       this._setStyle();
@@ -109,20 +111,23 @@ export default Component.extend({
     }
   ),
 
+  // eslint-disable-next-line ember/no-observers
   updateChildSplitView: observer('childSplitView', 'anchorOffset', 'parent.width', 'parent.height',
     function () {
       // must run afterRender so that the size has updated
-      scheduleOnce('afterRender', this, () => {
-        const childSplitView = this.childSplitView;
-
-        const element = this.element;
-        if (childSplitView) {
-          childSplitView.set('width', element.width);
-          childSplitView.set('height', element.height);
-        }
-      });
+      scheduleOnce('afterRender', this, this.updateSize);
     }
   ),
+
+  updateSize() {
+    const childSplitView = this.childSplitView;
+
+    const element = this.element;
+    if (childSplitView) {
+      childSplitView.set('width', element.width);
+      childSplitView.set('height', element.height);
+    }
+  },
 
   collapse() {
     if (this.anchorSide === 'left' || this.anchorSide === 'top') {
@@ -160,6 +165,7 @@ export default Component.extend({
   },
 
 
+  // eslint-disable-next-line ember/no-observers
   minSize: computed('parent.isVertical', 'childSplitView.minSize',
     function () {
       const childSplitView = this.childSplitView;

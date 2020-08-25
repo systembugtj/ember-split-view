@@ -1,3 +1,3 @@
-import SplitSash from 'ember-split-view/components/split-sash';
+import SplitSash from '@systembug/ember-split-view/components/split-sash';
 
 export default SplitSash;
