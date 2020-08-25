@@ -1,7 +1,7 @@
 /* eslint max-len: 0 */
 /* eslint new-cap: ["error", { "capIsNew": false }]*/
 import Component from '@ember/component';
-import { computed, observer } from '@ember/object';
+import { computed, observer, action } from '@ember/object';
 import { A } from '@ember/array';
 import { next, scheduleOnce } from '@ember/runloop'
 import SplitChild from './split-child';
@@ -45,40 +45,43 @@ import splitViewLayout from 'ember-split-view/templates/components/split-view';
  * @cLass SplitViewComponent
  * @extends Ember.Component
  */
-export default Component.extend({
-  layout: splitViewLayout,
+export default class SplitViewerComponent extends Component {
+  layout = splitViewLayout;
   /**
    * @property {boolean} isVertical - the orientation of the split: true = vertical, false = horizontal
    * @default true
    */
-  isVertical: true,
+  isVertical = true;
 
   /**
    * @property {Number} splitPosition - the position of the split in pixels
    * @default 50
    */
-  splitPosition: 250,
+  splitPosition = 250;
 
-  splits: null,
-  isDragging: false,
-  isRoot: false,
-  classNames: ['split-view'],
-  classNameBindings: ['isDragging:dragging', 'isVertical:vertical:horizontal'],
+  splits = null;
+  isDragging = false;
+  isRoot = false;
+  classNames = ['split-view'];
+  classNameBindings = ['isDragging:dragging', 'isVertical:vertical:horizontal'];
 
   init() {
-    this._super();
+    super.init();
     this.set('splits', A());
-  },
+  }
 
-  mouseUp() {
+  @action
+  handleMouseUp() {
     this.set('isDragging', false);
-  },
+  }
 
-  mouseLeave() {
+  @action
+  handleMouseLeave() {
     this.set('isDragging', false);
-  },
+  }
 
-  mouseMove(event) {
+  @action
+  handleMouseMove(event) {
     if (!this.isDragging) {
       return;
     }
@@ -94,10 +97,14 @@ export default Component.extend({
 
     this.set('splitPosition', position);
     this.constrainSplit();
-  },
+  }
 
   didInsertElement(...args) {
-    this._super(...args);
+    super.didInsertElement(...args);
+
+    this.element.addEventListener('mousemove', this.handleMouseMove);
+    this.element.addEventListener('mouseleave', this.handleMouseLeave);
+    this.element.addEventListener('mouseup', this.handleMouseUp);
 
     const parentView = this.parentView;
     const isRoot = !(parentView instanceof SplitChild);
@@ -131,22 +138,27 @@ export default Component.extend({
           this.set('height', clientRect.height);
         });
     });
-  },
+  }
 
   willDestroyElement() {
-    this._super();
+    super.willDestroyElement();
+
+    this.element.removeEventListener('mousemove', this.handleMouseMove);
+    this.element.removeEventListener('mouseleave', this.handleMouseLeave);
+    this.element.removeEventListener('mouseup', this.handleMouseUp);
+
     const resizeService = this.resizeService;
     if (resizeService) {
       resizeService.off('didResize', this, this.didResize);
     }
-  },
+  }
 
   didResize() {
     const clientRect = this.element.getBoundingClientRect();
     this.set('width', clientRect.width);
     this.set('height', clientRect.height);
     this.constrainSplit();
-  },
+  }
 
   _setStyle() {
     const style = this.element.style;
@@ -165,13 +177,13 @@ export default Component.extend({
       style.minWidth = null;
       style.minHeight = null;
     }
-  },
+  }
 
-  styleChanged: observer('isVertical', 'minSize', 'isRoot',
+  styleChanged = observer('isVertical', 'minSize', 'isRoot',
     function styleChanged() {
       this._setStyle();
     }
-  ),
+  );
 
   addSplit(split) {
     const splits = this.splits;
@@ -180,13 +192,13 @@ export default Component.extend({
     if (splits.length === 2) {
       this.updateOrientation();
     }
-  },
+  }
 
   removeSplit(split) {
     this.splits.removeObject(split);
-  },
+  }
 
-  updateOrientation: observer('isVertical',
+  updateOrientation = observer('isVertical',
     function () {
       const splits = this.splits;
       const leftOrTop = splits.objectAt(0);
@@ -200,9 +212,9 @@ export default Component.extend({
         rightOrBottom.set('anchorSide', 'top');
       }
     }
-  ),
+  );
 
-  constrainSplit: observer('sash.width', 'width', 'height', 'isVertical',
+  constrainSplit = observer('sash.width', 'width', 'height', 'isVertical',
     function () {
       const splits = this.splits;
       const leftOrTop = splits.objectAt(0);
@@ -225,9 +237,9 @@ export default Component.extend({
         }
       }
     }
-  ),
+  );
 
-  minSize: computed('splits.@each.minSize', 'sash.width',
+  minSize = computed('splits.@each.minSize', 'sash.width',
     function () {
       let result = 0;
       const children = this.splits;
@@ -237,7 +249,7 @@ export default Component.extend({
       result += (children.length - 1) * this.get('sash.width');
       return result;
     }
-  ),
+  );
 
   offset() {
     const rect = this.element.getBoundingClientRect();
@@ -246,6 +258,6 @@ export default Component.extend({
 			top: rect.top + win.pageYOffset,
 			left: rect.left + win.pageXOffset
 		};
-  },
+  }
 
-});
+}
