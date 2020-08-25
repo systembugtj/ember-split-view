@@ -1,12 +1,14 @@
 import Controller from '@ember/controller';
+import { action } from "@ember/object";
 
-export default Controller.extend({
-  actions: {
-    collapseLeft: function() {
-      this.leftChild.collapse();
-    },
-    collapseRight: function() {
-      this.rightChild.collapse();
-    }
+export default class CollapsibleController extends Controller {
+  @action
+  collapseLeft() {
+    this.leftChild.collapse();
   }
-});
+
+  @action
+  collapseRight() {
+    this.rightChild.collapse();
+  }
+}
