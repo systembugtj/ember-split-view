@@ -70,6 +70,32 @@ export default Component.extend({
     this.set('splits', A());
   },
 
+  mouseUp() {
+    this.set('isDragging', false);
+  },
+
+  mouseLeave() {
+    this.set('isDragging', false);
+  },
+
+  mouseMove(event) {
+    if (!this.isDragging) {
+      return;
+    }
+
+    let position = 0;
+
+    const offset = this.offset();
+    if (this.isVertical) {
+      position = event.pageX - offset.left;
+    } else {
+      position = event.pageY - offset.top;
+    }
+
+    this.set('splitPosition', position);
+    this.constrainSplit();
+  },
+
   didInsertElement(...args) {
     this._super(...args);
 
@@ -212,32 +238,6 @@ export default Component.extend({
       return result;
     }
   ),
-
-  mouseUp() {
-    this.set('isDragging', false);
-  },
-
-  mouseLeave() {
-    this.set('isDragging', false);
-  },
-
-  mouseMove(event) {
-    if (!this.isDragging) {
-      return;
-    }
-
-    let position = 0;
-
-    const offset = this.offset();
-    if (this.isVertical) {
-      position = event.pageX - offset.left;
-    } else {
-      position = event.pageY - offset.top;
-    }
-
-    this.set('splitPosition', position);
-    this.constrainSplit();
-  },
 
   offset() {
     const rect = this.element.getBoundingClientRect();

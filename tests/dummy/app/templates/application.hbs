@@ -3,17 +3,17 @@
   Drag the sash between the views (boxes).
 </div>
 
-{{#paper-toolbar}}
-  {{#paper-toolbar-tools}}
-    {{#link-to "vertical" class="toolbar-item"}}Vertical{{/link-to}}
-    {{#link-to "horizontal" class="toolbar-item"}}Horizontal{{/link-to}}
-    {{#link-to "verticalcomposite" class="toolbar-item"}}Vertical Composite{{/link-to}}
-    {{#link-to "horizontalcomposite" class="toolbar-item"}}Horizontal Composite{{/link-to}}
-    {{#link-to "composite" class="toolbar-item"}}Composite{{/link-to}}
-    {{#link-to "collapsible" class="toolbar-item"}}Collapsible{{/link-to}}
-  {{/paper-toolbar-tools}}
-{{/paper-toolbar}}
+<PaperToolbar>
+  <PaperToolbarTools>
+    <LinkTo @route="vertical" class="toolbar-item">Vertical</LinkTo>
+    <LinkTo @route="horizontal" class="toolbar-item">Horizontal</LinkTo>
+    <LinkTo @route="verticalcomposite" class="toolbar-item">Vertical Composite</LinkTo>
+    <LinkTo @route="horizontalcomposite" class="toolbar-item">Horizontal Composite</LinkTo>
+    <LinkTo @route="composite" class="toolbar-item">Composite</LinkTo>
+    <LinkTo @route="collapsible" class="toolbar-item">Collapsible</LinkTo>
+  </PaperToolbarTools>
+</PaperToolbar>
 
-{{#paper-content class="content"}}
+<PaperContent @class="content">
   {{outlet}}
-{{/paper-content}}
+</PaperContent>
